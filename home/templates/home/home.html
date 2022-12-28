@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block title %}
+    register
+{% endblock title %}
+{% block body %}
+    {% for cat in category %}
+        <h1>{{ cat.name }}</h1>
+        <a href="{{ cat.get_absolute_url }}">
+            <img src="{{ cat.image.url }}" style="width: 200px; height: 200px" alt="">
+        </a>
+    {% endfor %}
+{% endblock body %}

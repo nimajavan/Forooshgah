@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% block title %}
+    products
+{% endblock %}
+{% block body %}
+    <div class="text-center">
+        <form method="post" action="{% url 'home:product_search' %}">
+            {% csrf_token %}
+            {{ search }}
+            <button type="submit">search</button>
+        </form>
+    </div>
+
+    <div class="mt-2 mb-2">
+        {% for cat_1 in category %}
+            <a href="{{ cat_1.get_absolute_url }}">{{ cat_1.name }}</a>
+            <div class="btn-group">
+                <button type="button" class="btn btn-danger dropdown-toggle" data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                </button>
+                <ul class="dropdown-menu">
+                    {% for cat_2 in cat_1.sub.all %}
+                        <li><a class="dropdown-item" href="{{ cat_2.get_absolute_url }}">{{ cat_2.name }}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endfor %}
+    </div>
+    <div class="row">
+        <div class="col-3">
+            <form method="get" action="">
+                <label> price:
+                    <input type="range" name="price" min="{{ min }}" max="{{ max }}">
+                </label><br><br>
+                <label> Brand:
+                    {{ filter.form.brand }}
+                </label><br>
+                <label>color:
+                    {{ filter.form.color }}
+                </label><br>
+                <label>size:
+                    {{ filter.form.size }}
+                </label><br>
+                <button class="btn btn-danger" type="submit">set</button>
+            </form>
+            <br>
+
+        </div>
+        <div class="col-9">
+            <div class="container">
+                <div class="row">
+                    <div>
+                        <form action="">
+                            <input type="submit" name="price_sort" value="Cheap">
+                            <input type="submit" name="price_sort" value="Expensive">
+                            <input type="submit" name="time_sort" value="New">
+                            <input type="submit" name="like_sort" value="Like">
+                            <input type="submit" name="like_sort" value="Like_">
+                        </form>
+                    </div>
+                    {% for cat in product %}
+                        <div class="col-3 card">
+                            <h1>{{ cat.name }}</h1>
+                            <a href={% url 'home:products_details' cat.id %}>
+                                <img src="{{ cat.image.url }}" width="200px" height="200px" alt="">
+                            </a>
+                            <p>{{ cat.unit_price }}</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="">
+        <nav aria-label="Page navigation example">
+            <ul class="pagination">
+                {% if product.has_previous %}
+                    <li class="page-item"><a class="page-link"
+                                             href="?page={{ product.previous_page_number }}">Previous</a></li>
+                {% endif %}
+                {% if product.has_next %}
+                    <li class="page-item"><a class="page-link" href="?page={{ product.next_page_number }}">Next</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+{% endblock %}
+
+
+<li class="page-item"><a class="page-link" href="#">1</a></li>
+<li class="page-item"><a class="page-link" href="#">2</a></li>
+<li class="page-item"><a class="page-link" href="#">3</a></li>

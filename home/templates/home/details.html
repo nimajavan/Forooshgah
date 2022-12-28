@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+{% block body %}
+    <P>{{ product.information|safe }}</P>
+    <hr>
+    <div>
+        {% for img in image %}
+            <img src="{{ img.image.url }}" style="height: 200px; width: 200px;" alt="">
+        {% endfor %}
+    </div>
+    {% if product.status == 'Size' %}
+        {% for data in variant %}
+            <form method="post">
+            {% csrf_token %}
+            <input type="radio" value="{{ data.id }}" {% if variants.id == data.id %}checked{% endif %}
+            name="select" onchange="this.form.submit();">
+            <a href="" style="text-decoration: none">{{ data.size }}</a>
+            </form>
+        {% endfor %}
+    {% endif %}
+
+    {% if product.status == 'Color' %}
+        {% for data in variant %}
+            <form method="post">
+            {% csrf_token %}
+            <input type="radio" value="{{ data.id }}" {% if variants.id == data.id %}checked{% endif %}
+            name="select" onchange="this.form.submit();">
+            <a href="" style="text-decoration: none">{{ data.color }}</a>
+            </form>
+        {% endfor %}
+    {% endif %}
+    <div class="card bg-danger">
+        <p>your choice price: {{ variants.total_price }}</p>
+    </div>
+    <div class="card col-3">
+        {% if product.status != 'None' %}
+            <form method="post" action="{% url 'cart:add_cart' product.id %}">
+            {% csrf_token %}
+            <input type="hidden" name="select" value="{{ variants.id }}">
+            <input type="number" name="quantity" min="1" value="1" max="{{ variants.amount }}">
+            <button type="submit">Add</button>
+        </form>
+        {% else %}
+            <form method="post" action="{% url 'cart:add_cart' product.id %}">
+            {% csrf_token %}
+            <input type="number" name="quantity" min="1" value="1" max="{{ product.amount }}">
+            <button type="submit">Add</button>
+        </form>
+        {% endif %}
+    </div>
+    <hr>
+
+        <small>Like: {{ product.total_like }}</small>
+        {% if request.user.is_authenticated %}
+            {% if is_like == False %}
+                <a href="{% url 'home:product_like' product.id %}" class="btn btn-info
+                {% if is_unlike %}disabled{% endif %}">Like</a><br><br>
+            {% else %}
+                <a href="{% url 'home:product_like' product.id %}" class="btn btn-danger
+                {% if is_unlike %}disabled{% endif %}">disLike</a><br><br>
+            {% endif %}
+
+            <small>unLike: {{ product.total_unlike }}</small>
+            {% if is_unlike == False %}
+                <a href="{% url 'home:product_unlike'  product.id %}" class="btn btn-danger
+                {% if is_like %}disabled{% endif %}">unlike</a>
+            {% else %}
+                <a href="{% url 'home:product_unlike' product.id %}" class="btn btn-info
+                {% if is_like %}disabled{% endif %}">Like</a>
+            {% endif %}
+
+        {% endif %}
+    <hr>
+    {% for tag in similar %}
+        <a href="{% url 'home:products_details' tag.id %}">
+            <img src="{{ tag.image.url }}" alt="">
+        </a>
+    {% endfor %}
+
+    <div class="container card bg-dark text-white mb-2">
+    {% for com in comments %}
+        <a href="{% url 'home:comments_likes' com.id %}" class="like m-2 cursor">
+            Like
+        </a>
+        {{ com.total_like }}
+        <p>{{ com.text }}</p>
+        <small>rate: {{ com.rate }}</small>
+        <div class="col-4">
+            <form method="post" action="{% url 'home:comment_reply' product.id com.id %}">
+                {% csrf_token %}
+                <textarea name="text" id="text" class="form-control" rows="4" placeholder="Reply....."
+                required></textarea>
+                <button type="submit">Reply</button>
+            </form>
+        </div>
+        <div>
+        {% for data in com.comment_reply.all %}
+            <p>{{ data.text }}</p>
+        {% endfor %}
+        </div>
+        <hr>
+    {% endfor %}
+
+    </div>
+    <div class="card bg-dark text-white col-4 ">
+        <form method="post" action="{% url 'home:comment' product.id %}">
+        {% csrf_token %}
+        {{ comment_form.as_p }}
+        <button type="submit">send</button>
+    </form>
+    </div>
+
+{% endblock %}

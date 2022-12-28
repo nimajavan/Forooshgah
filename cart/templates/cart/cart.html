@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% block body %}
+    <div class="container mt-2">
+        <table class="table table-dark">
+            <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">image</th>
+                <th scope="col">product</th>
+                <th scope="col">size</th>
+                <th scope="col">color</th>
+                <th scope="col">price</th>
+                <th scope="col">count</th>
+                <th scope="col">total price</th>
+                <th scope="col">remove</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for c in card %}
+                <tr>
+                    <th scope="col">{{ forloop.counter }}</th>
+                    <td><img src="{{ c.product.image.url }}" style="width: 100px; height: 100px"></td>
+                    <td>{{ c.product.name }}</td>
+                    <td>{{ c.variant.size }}</td>
+                    <td>{{ c.variant.color }}</td>
+                    <td>
+                        {% if c.product.status != 'None' %}
+                            {{ c.variant.total_price }}
+                        {% else %}
+                            {{ c.product.total_price }}
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        <a href="{% url 'cart:add_quantity' c.id %}"><p>+</p></a>
+                        {{ c.quantity }}
+                        <a href="{% url 'cart:remove_quantity' c.id %}"><p>-</p></a>
+                    </td>
+                    <td>
+                        {% if c.product.status != 'None' %}
+                            {% widthratio c.variant.total_price 1 c.quantity %}
+                        {% else %}
+                            {% widthratio c.product.total_price 1 c.quantity %}
+                        {% endif %}
+                    </td>
+                    <td><a href="{% url 'cart:remove_cart' c.id %}">remove</a></td>
+                </tr>
+            {% endfor %}
+            <tr>
+                <td colspan="7">total price:</td>
+                <td>{{ total }}</td>
+            </tr>
+            </tbody>
+        </table>
+        <div>
+            <form method="post" action="{% url 'order:create_order' %}">
+                {% csrf_token %}
+                {{ order.as_p }}
+                <button type="submit">order</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}

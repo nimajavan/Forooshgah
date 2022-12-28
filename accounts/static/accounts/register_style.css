@@ -1,0 +1,29 @@
+form {
+    margin: 20px auto;
+    text-align: center;
+    background-color: darkgoldenrod;
+    width: 300px;
+    padding: 40px;
+    border-radius: 20px;
+}
+
+form label{
+    display: none;
+}
+
+form input{
+    width: 200px;
+    height: 40px;
+    border: 5px transparent;
+    border-radius: 10px;
+}
+
+form button{
+    width: 100px;
+    border-radius: 10px;
+    border: 5px transparent;
+}
+
+form button:hover{
+    background-color: brown;
+}
